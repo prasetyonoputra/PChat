@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>PChat by Prazz</title>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+
+  </head>
+  <body>
+
+    <div class="h1 text-center m-5">PChat by Prazz</div>
+    
+    <div class="card m-5 p-3">
+      <div class="card-body p-2" id="messages">
+      </div>
+      <div class="card-footer">
+        <form id="form" action="">
+          <input id="input" autocomplete="off" /> <br>
+          <button id="sendMessage" type="submit" class="btn btn-primary mt-2">Send</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+    let name = prompt("Masukan nama kamu")
+    while(!name){
+      name = prompt("Masukan nama kamu")
+    }
+
+    var socket = io();
+
+    var messages = document.getElementById('messages');
+    var form = document.getElementById('form');
+    var input = document.getElementById('input');
+
+    form.addEventListener('submit', function(e) {
+        e.preventDefault();
+        if (input.value) {
+          propSend = {
+            message: input.value,
+            name: name
+          }
+        socket.emit('chat message', propSend);
+        input.value = '';
+        }
+    });
+
+    socket.on('chat message', function(data) {
+        var item = document.createElement('div');
+        let message =
+          `<h4>${data.name}</h4>
+          <p>${data.message}</p>`
+          ;
+        item.innerHTML = message;
+
+        if(data.name === name){
+          item.classList.add("card");
+          item.classList.add("text-end");
+          item.classList.add("p-2");
+          item.classList.add("m-2");
+        }else{
+          item.classList.add("card");
+          item.classList.add("ext-start");
+          item.classList.add("p-2");
+          item.classList.add("m-2");
+        }
+        messages.appendChild(item);
+        window.scrollTo(0, document.body.scrollHeight);
+    });
+    </script>
+  </body>
+</html>
